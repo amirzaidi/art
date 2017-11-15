@@ -555,7 +555,8 @@ void Mutex::WakeupToRespondToEmptyCheckpoint() {
     futex(state_.Address(), FUTEX_WAKE, -1, nullptr, nullptr, 0);
   }
 #else
-  LOG(FATAL) << "Non futex case isn't supported.";
+  exclusive_owner_ = 0;
+  CHECK_MUTEX_CALL(pthread_mutex_unlock, (&mutex_));
 #endif
 }
 
@@ -807,7 +808,8 @@ void ReaderWriterMutex::WakeupToRespondToEmptyCheckpoint() {
     futex(state_.Address(), FUTEX_WAKE, -1, nullptr, nullptr, 0);
   }
 #else
-  LOG(FATAL) << "Non futex case isn't supported.";
+  exclusive_owner_ = 0;
+  CHECK_MUTEX_CALL(pthread_rwlock_unlock, (&rwlock_));
 #endif
 }
 
